@@ -1,0 +1,10 @@
+---
+- hosts: Nginx-server
+  become: yes
+    
+  roles:
+    - epel
+    - firewalld_off
+    - wget
+    - nginx
+
