@@ -1,0 +1,8 @@
+---
+- hosts: Apache-server
+  become: true
+  roles:
+     - epel
+     - firewalld_off
+     - httpd
+     - wget
