@@ -1,0 +1,19 @@
+#    - name: Change admin user
+#      lineinfile:
+#        path: /etc/grafana/grafana.ini
+#        regexp: "{{ item.before }}"
+#        line: "{{ item.after }}"
+#      with_items:
+#      - { before: "^;admin_user = admin", after: "admin_user = admin"}
+#      - { before: "^;admin_password = admin", after: "admin_password = admin"}
+
+    - name: Add datasource prometheus
+      grafana_datasource:
+        name: "prometheus"
+        grafana_url: "http://192.168.100.51:3000"
+        url_username: "admin"
+        url_password: "admin"
+        ds_url: "http://localhost:9090"
+        ds_type: "prometheus"
+        is_default: true
+      changed_when: false

@@ -1,0 +1,42 @@
+   - name: create node exporter user
+     user:
+        name: node_exporter
+        append: true
+        shell: /usr/sbin/nologin
+        system: true
+        create_home: false
+
+   - name: create_downloads_directory
+     file:
+        state: directory
+        path: /root/download_files
+
+   - name: Download  and unzipped Node_Exporter
+     unarchive:
+        src: https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+        dest: /root/download_files
+        creates: /root/download_files/node_exporter-1.6.1.linux-amd64.tar.gz
+        remote_src: yes
+
+   - name: Copy Bin Files From Unzipped to node_exporter
+     copy:
+       src: /root/download_files/node_exporter-1.6.1.linux-amd64/node_exporter
+       dest: /usr/local/bin/
+       remote_src: yes
+       mode: preserve
+       owner: node_exporter
+       group: node_exporter
+
+   - name: Copy_node_exporter_service
+     copy:
+        src: /etc/ansible/roles/node_exporter/files/node_exporter.service
+        dest: /etc/systemd/system/
+
+   - name: reload systemd
+     command: systemctl daemon-reload
+
+   - name: service always started
+     systemd:
+        name: node_exporter
+        state: started
+        enabled: yes

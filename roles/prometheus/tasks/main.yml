@@ -1,0 +1,105 @@
+   - name: Create downloads directory
+     file:
+        state: directory
+        path: /root/download_files/
+
+   - name: Create prometheus system group
+     ansible.builtin.group:
+        name: prometheus
+        system: true
+        state: present
+
+   - name: Create Prometheus system user
+     ansible.builtin.user:
+        name: prometheus
+        system: true
+        shell: "/usr/sbin/nologin"
+        group: prometheus
+        createhome: false
+
+   - name: Download And Unzipped Prometheus
+     unarchive:
+        src: https://github.com/prometheus/prometheus/releases/download/v2.46.0/prometheus-2.46.0.linux-amd64.tar.gz
+        dest: /root/download_files/
+        creates: /root/download_files/prometheus-2.46.0.linux-amd64.tar.gz
+        remote_src: yes
+
+   - name: Create directories for prometheus-1
+     ansible.builtin.file:
+        path: /etc/prometheus
+        state: directory
+        owner: prometheus
+        group: prometheus
+
+   - name: Create directories for prometheus-2
+     ansible.builtin.file:
+        path: /var/lib/prometheus
+        state: directory
+        owner: prometheus
+        group: prometheus
+
+
+   - name: Copy Bin Files From Unzipped to Prometheus (prometheus)
+     copy:
+       src: /root/download_files/prometheus-2.46.0.linux-amd64/prometheus
+       dest: /usr/local/bin/
+       remote_src: yes
+       mode: preserve
+       owner: prometheus
+       group: prometheus
+
+   - name: Copy Bin Files From Unzipped to Prometheus (promtool)
+     copy:
+       src: /root/download_files/prometheus-2.46.0.linux-amd64/promtool
+       dest: /usr/local/bin/
+       remote_src: yes
+       mode: preserve
+       owner: prometheus
+       group: prometheus
+
+   - name: Copy Conf Files From Unzipped to Prometheus (console_libraries)
+     copy:
+       src: /root/download_files/prometheus-2.46.0.linux-amd64/console_libraries
+       dest: /etc/prometheus/
+       remote_src: yes
+       mode: preserve
+       owner: prometheus
+       group: prometheus
+
+   - name: Copy Conf Files From Unzipped to Prometheus (consoles)
+     copy:
+       src: /root/download_files/prometheus-2.46.0.linux-amd64/consoles
+       dest: /etc/prometheus/
+       remote_src: yes
+       mode: preserve
+       owner: prometheus
+       group: prometheus
+
+   - name: Copy Conf Files From Unzipped to Prometheus (prometheus.yml)
+     copy:
+       src: /root/download_files/prometheus-2.46.0.linux-amd64/prometheus.yml
+       dest: /etc/prometheus/
+       remote_src: yes
+       mode: preserve
+       owner: prometheus
+       group: prometheus
+
+   - name: Copy file prometheus-service
+     copy:
+        src: /etc/ansible/roles/prometheus/files/
+        dest: /etc/systemd/system/
+
+   - name: Copy file prometheus_config
+     copy:
+        src: /etc/ansible/roles/prometheus/files/prometheus.yml
+        dest: /etc/prometheus/
+        mode: preserve
+
+   - name: reload systemd
+     command: systemctl daemon-reload
+
+   - name: Systemctl Prometheus Start
+     systemd:
+       name: prometheus
+       state: started
+       enabled: yes

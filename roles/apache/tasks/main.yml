@@ -1,0 +1,55 @@
+     - name: install_apache2
+       apt:
+          name: apache2
+          update_cache: yes
+          state: latest
+
+     - name: install_packages_php
+       apt: name={{ item }} update_cache=yes state=latest
+       with_items:
+          - php
+          - php-curl
+          - php-mbstring
+          - php-xml
+          - php-xmlrpc
+          - php-mysqli
+
+     - name: mysql-client
+       apt:
+          name: mysql-client
+          state: latest
+
+     - name: create_downloads_directory
+       file:
+          path: /root/download_files/
+          state: directory
+
+     - name: Download Wordpress
+       ansible.builtin.get_url:
+          url: https://ru.wordpress.org/wordpress-6.2.2-ru_RU.tar.gz
+          dest: /root/download_files/
+
+     - name: Unarchive a file that is already on the remote machine
+       ansible.builtin.unarchive:
+          src: /root/download_files/wordpress-6.2.2-ru_RU.tar.gz
+          dest: /var/www/
+          owner: "root"
+          group: "root"
+          remote_src: yes
+
+     - name: Copy_file_config
+       ansible.builtin.copy:
+          src: /etc/ansible/roles/apache/files/wp-config.php
+          dest: /var/www/wordpress/
+
+     - name: Create_path_media
+       file:
+         path: /var/www/wordpress/wp-content/uploads/
+         mode: 0777
+         state: directory
+
+     - name: enable and restart apache2
+       service:
+          name: apache2
+          state: restarted
+          enabled: yes

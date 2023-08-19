@@ -1,0 +1,19 @@
+ - name: Remove file_config
+   ansible.builtin.file:
+    path: /etc/apache2/sites-available/000-default.conf
+    state: absent
+
+ - name: Copy_config_file
+   copy:
+      src: /etc/ansible/roles/apache1/files/000-default.conf
+      dest: /etc/apache2/sites-available/
+
+ - name: Copy_index_test_file
+   copy:
+      src: /etc/ansible/roles/apache1/files/index.html
+      dest: /var/www/html
+
+ - name: restart_apache2
+   service:
+      name: apache2
+      state: restarted

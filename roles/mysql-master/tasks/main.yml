@@ -1,0 +1,21 @@
+    - name: Create repl user with remote access
+      mysql_user:
+        name: repl
+        password: Repli2023
+        priv: '*.*:REPLICATION SLAVE'
+        host: '%'
+        append_privs: yes
+        login_user: root
+        login_password: neojidanno_1989Aa
+        state: present
+
+    - name: Create wordpress user with remote access
+      mysql_user:
+        name: wordpress
+        password: udacha_1989Aa
+        priv: 'wordpress.*:ALL'
+        host: '%'
+        append_privs: yes
+        login_user: root
+        login_password: neojidanno_1989Aa
+        state: present

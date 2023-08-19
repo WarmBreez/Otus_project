@@ -1,0 +1,16 @@
+     - name: install_nginx
+       apt:
+         name: nginx
+         update_cache: yes
+         state: latest
+
+     - name: Copy_file_config
+       ansible.builtin.copy:
+         src: /etc/ansible/roles/nginx/files/default
+         dest: /etc/nginx/sites-available/
+
+     - name: enable_nginx
+       service: name=nginx enabled=yes
+
+     - name: restart_nginx
+       service: name=nginx state=restarted

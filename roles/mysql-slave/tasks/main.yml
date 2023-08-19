@@ -1,0 +1,53 @@
+    - name: Chenge ID mysql
+      lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        line: 'server_id = 2'
+        backup: yes
+
+    - name: restart_mysql
+      service:
+        name: mysql
+        state: restarted
+
+    - name: Create_directory_for_backup
+      file:
+         path: /home/alex/backups/
+         state: directory
+
+    - name: Copy_bat
+      ansible.builtin.copy:
+         src: /root/files/bkp_dump.sh
+         dest: /home/alex/
+
+    - name: shell_comand_for_ bat
+      command: chmod +x /home/alex/bkp_dump.sh
+
+    - name: Creates a cron file under /etc/cron.d
+      cron:
+         name: "download task"
+         minute: "0"
+         hour: "23"
+         user: root
+         job: "/home/alex/bkp_dump.sh"
+
+    - name: Stop replication
+      community.mysql.mysql_replication:
+        login_user: root
+        login_password: neojidanno_1989Aa
+        mode: stopreplica
+
+    - name: Change primary to primary server mysql-slave and use binary log
+      community.mysql.mysql_replication:
+        primary_user: repl
+        primary_password: Repli2023
+        primary_host: 192.168.100.54
+        primary_log_file: mysql-bin.000004
+        primary_log_pos: 1403
+        primary_ssl: yes
+        mode: changeprimary
+
+    - name: Start replication
+      community.mysql.mysql_replication:
+        login_user: root
+        login_password: neojidanno_1989Aa
+        mode: startreplica
