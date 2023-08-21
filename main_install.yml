@@ -1,0 +1,46 @@
+---
+ - hosts: Apache
+   become: yes
+   roles:
+     - apache
+     - node_exporter
+
+ - hosts: apache1
+   become: yes
+   roles:
+     - apache1
+
+ - hosts: apache2
+   become: yes
+   roles:
+     - apache2
+
+ - hosts: Nginx
+   become: yes
+   roles:
+     - nginx
+     - node_exporter
+
+ - hosts: MYSQL
+   become: yes
+   roles:
+      - mysql
+      - node_exporter
+
+ - hosts: mysql-master
+   become: yes
+   roles:
+     - mysql-master
+
+ - hosts: mysql-slave
+   become: yes
+   roles:
+     - mysql-slave
+
+ - hosts: Prometheus
+   become: yes
+   roles:
+     - prometheus
+     - grafana
+     - node_exporter
+#     - prometheus_source
